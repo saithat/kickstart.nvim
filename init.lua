@@ -315,6 +315,12 @@ do
         vim.cmd 'TSUpdate'
         return
       end
+
+      if name == 'markdown-preview.nvim' then
+        local package = vim.json.decode(table.concat(vim.fn.readfile(vim.fs.joinpath(ev.data.path, 'package.json')), '\n'))
+        run_build(name, { './install.sh', 'v' .. package.version }, vim.fs.joinpath(ev.data.path, 'app'))
+        return
+      end
     end,
   })
 end
@@ -1001,6 +1007,54 @@ do
       end
     end,
   })
+end
+
+-- ============================================================
+-- LEAN 4
+-- ============================================================
+do
+  -- Suggested Lean mappings use <LocalLeader>, which is Space in this config.
+  -- Use dedicated Lean-buffer mappings to avoid the existing Space mappings.
+  vim.g.lean_config = { mappings = false }
+  vim.pack.add { gh 'Julian/lean.nvim' }
+
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'lean',
+    callback = function(args)
+      vim.keymap.set('n', '<leader>tl', '<Cmd>LeanInfoviewToggle<CR>', { buffer = args.buf, desc = '[T]oggle [L]ean infoview' })
+      vim.keymap.set('n', '<leader>lg', '<Cmd>LeanGoal<CR>', { buffer = args.buf, desc = '[L]ean [G]oal at cursor' })
+      vim.keymap.set('n', '<leader>lr', '<Cmd>LeanRestartFile<CR>', { buffer = args.buf, desc = '[L]ean [R]estart file' })
+    end,
+  })
+end
+
+-- ============================================================
+-- MARKDOWN PREVIEW
+-- ============================================================
+do
+  vim.pack.add {
+    gh 'MeanderingProgrammer/render-markdown.nvim',
+    gh 'iamcco/markdown-preview.nvim',
+  }
+
+  -- Keep Markdown as source text until its in-buffer rendering is requested.
+  require('render-markdown').setup { enabled = false }
+
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'markdown',
+    callback = function(args)
+      vim.keymap.set('n', '<leader>tm', '<Cmd>RenderMarkdown buf_toggle<CR>', { buffer = args.buf, desc = '[T]oggle rendered [M]arkdown' })
+      vim.keymap.set('n', '<leader>tp', '<Cmd>MarkdownPreviewToggle<CR>', { buffer = args.buf, desc = '[T]oggle browser [P]review' })
+    end,
+  })
+end
+
+-- ============================================================
+-- SHORTCUT QUESTIONS
+-- ============================================================
+do
+  vim.pack.add { gh 'David-Kunz/gen.nvim' }
+  require('custom.shortcut_assistant').setup()
 end
 
 -- ============================================================
