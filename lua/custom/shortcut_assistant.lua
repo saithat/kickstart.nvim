@@ -99,7 +99,7 @@ local function ask()
       return safe_prompt
     end,
     replace = false,
-    body = { think = 'low', keep_alive = 0, options = { temperature = 0, num_predict = 768, num_ctx = 8192 } },
+    body = { think = false, keep_alive = 0, options = { temperature = 0, num_predict = 768, num_ctx = 8192 } },
     command = function()
       local script = vim.fn.stdpath('config') .. '/scripts/shortcut_history_proxy.py'
       return ('python3 %s %s $body'):format(vim.fn.shellescape(script), vim.fn.shellescape(history_path))
@@ -120,7 +120,11 @@ local function start_ollama()
 end
 
 function M.setup()
-  require('gen').setup { model = 'gpt-oss:20b', init = start_ollama }
+  require('gen').setup {
+    model = 'qwen3.5:4b-q4_K_M',
+    init = start_ollama,
+    body = { stream = true, think = false, options = { num_ctx = 8192 } },
+  }
   vim.keymap.set('n', '<leader>sa', ask, { desc = '[S]earch [A]sk about shortcuts' })
   vim.api.nvim_create_user_command('ShortcutHistory', function()
     vim.cmd('edit ' .. vim.fn.fnameescape(history_path))
