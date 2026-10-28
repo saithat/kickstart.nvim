@@ -121,7 +121,7 @@ end
 
 function M.setup()
   require('gen').setup {
-    model = 'qwen3.5:4b-q4_K_M',
+    model = 'qwen3.6:27b',
     init = start_ollama,
     body = { stream = true, think = false, options = { num_ctx = 8192 } },
   }

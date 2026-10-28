@@ -9,6 +9,7 @@ import sys
 import time
 import uuid
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -88,6 +89,8 @@ def main():
         with urlopen(request, timeout=240) as response:
             for line in response:
                 chunk = json.loads(line)
+                if chunk.get("error"):
+                    raise RuntimeError(chunk["error"])
                 message = chunk.get("message") or {}
                 record["response"]["text"] += message.get("content") or ""
                 record["response"]["thinking"] += message.get("thinking") or ""
@@ -110,13 +113,21 @@ def main():
             ) + f"\n[Could not save shortcut history: {exc}]"
         emit(final)
     except Exception as exc:
+        error = str(exc)
+        if isinstance(exc, HTTPError):
+            try:
+                detail = json.loads(exc.read()).get("error")
+                if detail:
+                    error += f": {detail}"
+            except (ValueError, OSError, AttributeError):
+                pass
         record["latency_ms"] = round((time.monotonic() - started) * 1000)
-        record["response"]["error"] = str(exc)
+        record["response"]["error"] = error
         try:
             save(history_path, record)
         except OSError:
             pass
-        emit({"message": {"content": f"Shortcut assistant failed: {exc}"}, "done": True})
+        emit({"message": {"content": f"Shortcut assistant failed: {error}"}, "done": True})
         raise SystemExit(1)
 
 
