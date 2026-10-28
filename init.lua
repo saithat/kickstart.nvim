@@ -1019,6 +1019,23 @@ do
 end
 
 -- ============================================================
+-- COQ / ROCQ
+-- ============================================================
+do
+  -- Use the pynvim tool instead of Fedora's system Python provider.
+  local python_host = vim.fn.exepath 'pynvim-python'
+  if python_host ~= '' then vim.g.python3_host_prog = python_host end
+  vim.g.filetype_v = 'coq'
+
+  -- Interactive proofs in .v files; use Space cc to start and Space cj to step.
+  vim.pack.add { gh 'whonore/Coqtail' }
+
+  -- Suppress the startup notice for the Rocq 9.3.0 / 9.2.0 interface we tested.
+  vim.cmd.runtime 'autoload/coqtail/util.vim'
+  vim.cmd.source(vim.fn.stdpath 'config' .. '/after/autoload/coqtail/util.vim')
+end
+
+-- ============================================================
 -- MARKDOWN PREVIEW
 -- ============================================================
 do

@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "Coqtail": {
+      "rev": "0742cf70acb4614a6a5b34c5078f3a2e5ef43b07",
+      "src": "https://github.com/whonore/Coqtail"
+    },
     "LuaSnip": {
       "rev": "642b0c595e11608b4c18219e93b88d7637af27bc",
       "src": "https://github.com/L3MON4D3/LuaSnip",
