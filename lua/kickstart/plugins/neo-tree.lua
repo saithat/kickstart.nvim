@@ -12,5 +12,7 @@ vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle<CR>', { desc = 'NeoTree to
 require('neo-tree').setup {
   filesystem = {
     follow_current_file = { enabled = true },
+    -- Let oil.nvim handle opening directories (see lua/custom/plugins/oil.lua)
+    hijack_netrw_behavior = 'disabled',
   },
 }
